@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.example.shoppinglist.presentation.ShopListAdapter
 import com.example.shoppinglist_myown_v2.R
+import com.example.shoppinglist_myown_v2.presentation.rv.ShopListAdapter
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
-            shopListAdapter.shopList = it
+            shopListAdapter.listShopItem = it
         }
     }
 
@@ -29,12 +29,6 @@ class MainActivity : AppCompatActivity() {
         with(rvShopList) {
             shopListAdapter = ShopListAdapter()
             adapter = shopListAdapter
-            recycledViewPool.setMaxRecycledViews(
-                ShopListAdapter.VIEW_TYPE_ENABLED, ShopListAdapter.VH_MAX_POOL_SIZE
-            )
-            recycledViewPool.setMaxRecycledViews(
-                ShopListAdapter.VIEW_TYPE_DISABLED, ShopListAdapter.VH_MAX_POOL_SIZE
-            )
         }
     }
 }
