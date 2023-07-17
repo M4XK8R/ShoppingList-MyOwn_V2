@@ -43,18 +43,33 @@ class RecyclerFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentRecyclerBinding.inflate(inflater, container, false)
-        // Inflate the layout for this fragment
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        shopListAdapter = ShopListAdapter()
-        binding.rvShopList.adapter = shopListAdapter
+        setUpRecyclerView()
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(viewLifecycleOwner) {
             shopListAdapter.listShopItem = it
+        }
+    }
+
+    private fun setUpRecyclerView() {
+        shopListAdapter = ShopListAdapter()
+        binding.rvShopList.apply {
+            adapter = shopListAdapter
+            recycledViewPool.apply {
+                setMaxRecycledViews(
+                    ShopListAdapter.VIEW_TYPE_ENABLED,
+                    ShopListAdapter.POOL_SIZE_SUITABLE
+                )
+                setMaxRecycledViews(
+                    ShopListAdapter.VIEW_TYPE_DISABLED,
+                    ShopListAdapter.POOL_SIZE_SUITABLE
+                )
+            }
         }
     }
 
