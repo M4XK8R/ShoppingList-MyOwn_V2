@@ -8,14 +8,11 @@ import com.example.shoppinglist_myown_v2.databinding.ViewHolderItemShopDisabledB
 import com.example.shoppinglist_myown_v2.databinding.ViewHolderItemShopEnabledBinding
 import com.example.shoppinglist_myown_v2.domain.ShopItem
 
-private const val VIEW_TYPE_ENABLED = 1
-private const val VIEW_TYPE_DISABLED = 0
-
 class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
     private var countOfOnCreateViewHolder = 0
-    private var countOfOnBindViewHolder = 0
 
     var onShopItemLongClickListener: OnShopItemLongClickListener? = null
+    var onShopItemLongClickListenerLambda: ((ShopItem) -> Unit)? = null
 
     var listShopItem = listOf<ShopItem>()
         set(value) {
@@ -44,7 +41,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
         holder.binding.apply {
 //            root.setOnClickListener { TODO() }
             root.setOnLongClickListener {
-                onShopItemLongClickListener?.onShopItemLongClick(shopItem)
+                onShopItemLongClickListenerLambda?.invoke(shopItem)
                 true
             }
             when (this) {

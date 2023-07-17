@@ -73,13 +73,9 @@ class RecyclerFragment : Fragment() {
                     ShopListAdapter.POOL_SIZE_SUITABLE
                 )
             }
-            shopListAdapter.onShopItemLongClickListener =
-                object : ShopListAdapter.OnShopItemLongClickListener {
-                    override fun onShopItemLongClick(shopItem: ShopItem) {
-                        viewModel.changeIsEnableState(shopItem)
-                    }
-
-                }
+            shopListAdapter.onShopItemLongClickListenerLambda = {
+                viewModel.changeIsEnableState(it)
+            }
         }
     }
 
