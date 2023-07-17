@@ -15,7 +15,13 @@ class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
     private var countOfOnCreateViewHolder = 0
     private var countOfOnBindViewHolder = 0
 
+    var onShopItemLongClickListener: OnShopItemLongClickListener? = null
+
     var listShopItem = listOf<ShopItem>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
         Log.d("ShopListAdapter", "onCreateViewHolder ${countOfOnCreateViewHolder++}")
@@ -34,11 +40,13 @@ class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
-//        Log.d("ShopListAdapter", "onBindViewHolder ${countOfOnBindViewHolder++}")
         val shopItem = listShopItem[position]
         holder.binding.apply {
 //            root.setOnClickListener { TODO() }
-//            root.setOnLongClickListener { TODO() }
+            root.setOnLongClickListener {
+                onShopItemLongClickListener?.onShopItemLongClick(shopItem)
+                true
+            }
             when (this) {
                 is ViewHolderItemShopEnabledBinding -> {
                     tvName.text = shopItem.name
@@ -64,6 +72,10 @@ class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
                 "Property isStateEnabled (now = $isStateEnabled) must be initialized"
             )
         }
+    }
+
+    interface OnShopItemLongClickListener {
+        fun onShopItemLongClick(shopItem: ShopItem)
     }
 
     companion object {

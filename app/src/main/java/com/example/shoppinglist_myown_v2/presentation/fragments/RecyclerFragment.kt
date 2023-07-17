@@ -1,6 +1,7 @@
 package com.example.shoppinglist_myown_v2.presentation.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist_myown_v2.R
 import com.example.shoppinglist_myown_v2.databinding.FragmentRecyclerBinding
+import com.example.shoppinglist_myown_v2.domain.ShopItem
 import com.example.shoppinglist_myown_v2.presentation.MainViewModel
 import com.example.shoppinglist_myown_v2.presentation.rv.ShopListAdapter
 
@@ -53,6 +55,7 @@ class RecyclerFragment : Fragment() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(viewLifecycleOwner) {
             shopListAdapter.listShopItem = it
+            Log.d("Recycler", " viewModel.shopListLd UP")
         }
     }
 
@@ -70,6 +73,13 @@ class RecyclerFragment : Fragment() {
                     ShopListAdapter.POOL_SIZE_SUITABLE
                 )
             }
+            shopListAdapter.onShopItemLongClickListener =
+                object : ShopListAdapter.OnShopItemLongClickListener {
+                    override fun onShopItemLongClick(shopItem: ShopItem) {
+                        viewModel.changeIsEnableState(shopItem)
+                    }
+
+                }
         }
     }
 

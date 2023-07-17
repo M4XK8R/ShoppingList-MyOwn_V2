@@ -1,5 +1,6 @@
 package com.example.shoppinglist_myown_v2.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.shoppinglist_myown_v2.data.ShopListRepositoryImpl
 import com.example.shoppinglist_myown_v2.domain.DeleteShopItemUseCase
@@ -21,7 +22,8 @@ class MainViewModel : ViewModel() {
     }
 
     fun changeIsEnableState(shopItem: ShopItem) {
-        val newShopItem = shopItem.copy(isEnabled = !shopItem.isEnabled)
+        val currentState = shopItem.isEnabled
+        val newShopItem = shopItem.copy(isEnabled = !currentState)
         editShopItemUseCase.editShopItem(newShopItem)
     }
 }
