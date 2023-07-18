@@ -1,14 +1,13 @@
-package com.example.shoppinglist_myown_v2.presentation
+package com.example.shoppinglist_myown_v2.presentation.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.shoppinglist_myown_v2.data.ShopListRepositoryImpl
-import com.example.shoppinglist_myown_v2.domain.DeleteShopItemUseCase
-import com.example.shoppinglist_myown_v2.domain.EditShopItemUseCase
-import com.example.shoppinglist_myown_v2.domain.GetShopListUseCase
-import com.example.shoppinglist_myown_v2.domain.ShopItem
+import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
+import com.example.shoppinglist_myown_v2.domain.usecases.DeleteShopItemUseCase
+import com.example.shoppinglist_myown_v2.domain.usecases.EditShopItemUseCase
+import com.example.shoppinglist_myown_v2.domain.usecases.GetShopListUseCase
 
-class MainViewModel : ViewModel() {
+class RecyclerViewModel : ViewModel() {
     private val repository = ShopListRepositoryImpl
 
     private val getShopListUseCase = GetShopListUseCase(repository)

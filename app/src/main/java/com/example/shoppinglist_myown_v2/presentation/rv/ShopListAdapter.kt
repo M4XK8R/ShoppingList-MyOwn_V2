@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist_myown_v2.databinding.ViewHolderItemShopDisabledBinding
 import com.example.shoppinglist_myown_v2.databinding.ViewHolderItemShopEnabledBinding
-import com.example.shoppinglist_myown_v2.domain.ShopItem
+import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
 
 class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
     private var countOfOnCreateViewHolder = 0
