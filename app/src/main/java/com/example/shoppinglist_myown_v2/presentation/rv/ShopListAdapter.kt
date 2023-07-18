@@ -11,8 +11,9 @@ import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
 class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
     private var countOfOnCreateViewHolder = 0
 
-    var onShopItemLongClickListener: OnShopItemLongClickListener? = null
+
     var onShopItemLongClickListenerLambda: ((ShopItem) -> Unit)? = null
+    var onShopItemClickListenerLambda: ((ShopItem) -> Unit)? = null
 
     var listShopItem = listOf<ShopItem>()
         set(value) {
@@ -39,7 +40,9 @@ class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val shopItem = listShopItem[position]
         holder.binding.apply {
-//            root.setOnClickListener { TODO() }
+           root.setOnClickListener {
+               onShopItemClickListenerLambda?.invoke(shopItem)
+           }
             root.setOnLongClickListener {
                 onShopItemLongClickListenerLambda?.invoke(shopItem)
                 true
@@ -69,10 +72,6 @@ class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
                 "Property isStateEnabled (now = $isStateEnabled) must be initialized"
             )
         }
-    }
-
-    interface OnShopItemLongClickListener {
-        fun onShopItemLongClick(shopItem: ShopItem)
     }
 
     companion object {

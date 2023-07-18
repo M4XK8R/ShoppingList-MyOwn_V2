@@ -8,7 +8,6 @@ import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
 import com.example.shoppinglist_myown_v2.domain.usecases.AddShopItemUseCase
 import com.example.shoppinglist_myown_v2.domain.usecases.EditShopItemUseCase
 import com.example.shoppinglist_myown_v2.domain.usecases.GetShopItemByIdUseCase
-import com.example.shoppinglist_myown_v2.domain.usecases.GetShopListUseCase
 
 class DetailViewModel : ViewModel() {
     private val repository = ShopListRepositoryImpl
@@ -27,6 +26,9 @@ class DetailViewModel : ViewModel() {
     private val _shopItemLd = MutableLiveData<ShopItem>()
     val shopItemLd: LiveData<ShopItem> get() = _shopItemLd
 
+    private val _anotherThreadsWorksIsDoneLd = MutableLiveData<Unit>()
+    val anotherThreadsWorksIsDoneLd: LiveData<Unit> get() = _anotherThreadsWorksIsDoneLd
+
     // FUNCTIONS FOR USING FROM DETAIL FRAGMENT
     fun setValueToShopItemLdById(shopItemId: Int) {
         val shopItem = getShopItemById(shopItemId)
@@ -42,10 +44,10 @@ class DetailViewModel : ViewModel() {
         val count = parseCount(inputCount)
         val isFieldsValid = isInputValid(name, count)
         if (isFieldsValid) {
-            val shopItem = ShopItem(name, count, true)
+            val shopItem = ShopItem(name = name, count = count, true)
             addShopItemUseCase.addShopItem(shopItem)
-//            finishWork()
         }
+        _anotherThreadsWorksIsDoneLd.value = Unit
     }
 
     fun editShopItem(inputName: String?, inputCount: String?) {
@@ -56,9 +58,9 @@ class DetailViewModel : ViewModel() {
             _shopItemLd.value?.let {
                 val newShopItem = it.copy(name = name, count = count)
                 editShopItemUseCase.editShopItem(newShopItem)
-//                finishWork()
             }
         }
+        _anotherThreadsWorksIsDoneLd.value = Unit
     }
 
     private fun parseName(inputName: String?): String = inputName?.trim() ?: ""

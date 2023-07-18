@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import com.example.shoppinglist_myown_v2.R
 import com.example.shoppinglist_myown_v2.databinding.FragmentRecyclerBinding
 import com.example.shoppinglist_myown_v2.presentation.viewmodels.RecyclerViewModel
 import com.example.shoppinglist_myown_v2.presentation.rv.ShopListAdapter
@@ -33,6 +34,14 @@ class RecyclerFragment : Fragment() {
             shopListAdapter.listShopItem = it
             Log.d("Recycler", " viewModel.shopListLd UP")
         }
+
+        binding.buttonAdd.setOnClickListener {
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.mainFragmentContainer, DetailFragment.newInstanceAddMode())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     private fun setUpRecyclerView() {
@@ -51,6 +60,13 @@ class RecyclerFragment : Fragment() {
             }
             shopListAdapter.onShopItemLongClickListenerLambda = {
                 viewModel.changeIsEnableState(it)
+            }
+            shopListAdapter.onShopItemClickListenerLambda = {
+                requireActivity().supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.mainFragmentContainer, DetailFragment.newInstanceEditMode(it.id))
+                    .addToBackStack(null)
+                    .commit()
             }
         }
     }
