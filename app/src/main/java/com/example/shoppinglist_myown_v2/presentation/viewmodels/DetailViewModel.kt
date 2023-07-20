@@ -17,26 +17,22 @@ class DetailViewModel : ViewModel() {
     private val editShopItemUseCase = EditShopItemUseCase(repository)
 
     // LD
+    private val _shopItemLd = MutableLiveData<ShopItem>()
+
     private val _isInputNameInvalidLd = MutableLiveData<Boolean>()
     val isInputNameInvalidLd: LiveData<Boolean> get() = _isInputNameInvalidLd
 
     private val _isInputCountInvalidLd = MutableLiveData<Boolean>()
     val isInputCountInvalidLd: LiveData<Boolean> get() = _isInputCountInvalidLd
 
-    private val _shopItemLd = MutableLiveData<ShopItem>()
-    val shopItemLd: LiveData<ShopItem> get() = _shopItemLd
-
     private val _anotherThreadsWorksIsDoneLd = MutableLiveData<Unit>()
     val anotherThreadsWorksIsDoneLd: LiveData<Unit> get() = _anotherThreadsWorksIsDoneLd
 
-    // FUNCTIONS FOR USING FROM DETAIL FRAGMENT
-    fun setValueToShopItemLdById(shopItemId: Int) {
-        val shopItem = getShopItemById(shopItemId)
-        _shopItemLd.value = shopItem
-    }
 
-    private fun getShopItemById(shopItemId: Int): ShopItem {
-        return getShopItemByIdUseCase.getShopItemById(shopItemId)
+    // FUNCTIONS FOR USING FROM DETAIL FRAGMENT
+    fun getActualShopItemLd(shopItemId: Int): LiveData<ShopItem> {
+        setValueToShopItemLdById(shopItemId)
+        return _shopItemLd
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
@@ -61,6 +57,16 @@ class DetailViewModel : ViewModel() {
             }
         }
         _anotherThreadsWorksIsDoneLd.value = Unit
+    }
+
+    // PRIVATE FUNCTIONS
+    private fun setValueToShopItemLdById(shopItemId: Int) {
+        val shopItem = getShopItemById(shopItemId)
+        _shopItemLd.value = shopItem
+    }
+
+    private fun getShopItemById(shopItemId: Int): ShopItem {
+        return getShopItemByIdUseCase.getShopItemById(shopItemId)
     }
 
     private fun parseName(inputName: String?): String = inputName?.trim() ?: ""

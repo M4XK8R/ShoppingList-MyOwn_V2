@@ -14,8 +14,9 @@ import com.example.shoppinglist_myown_v2.presentation.rv.ShopListAdapter
 
 class RecyclerFragment : Fragment() {
     private lateinit var binding: FragmentRecyclerBinding
-    private lateinit var viewModel: RecyclerViewModel
     private lateinit var shopListAdapter: ShopListAdapter
+
+    private lateinit var viewModel: RecyclerViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,6 +29,7 @@ class RecyclerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUpRecyclerView()
+        setUpRecyclerElementsListeners()
 
         viewModel = ViewModelProvider(this)[RecyclerViewModel::class.java]
         viewModel.shopList.observe(viewLifecycleOwner) {
@@ -36,13 +38,11 @@ class RecyclerFragment : Fragment() {
         }
 
         binding.buttonAdd.setOnClickListener {
-            requireActivity().supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.mainFragmentContainer, DetailFragment.newInstanceAddMode())
-                .addToBackStack(null)
-                .commit()
+            launchDetailFragmentInAddMode()
         }
     }
+
+    // PRIVATE FUNCTIONS
 
     private fun setUpRecyclerView() {
         shopListAdapter = ShopListAdapter()
@@ -58,17 +58,45 @@ class RecyclerFragment : Fragment() {
                     ShopListAdapter.POOL_SIZE_SUITABLE
                 )
             }
-            shopListAdapter.onShopItemLongClickListenerLambda = {
-                viewModel.changeIsEnableState(it)
-            }
-            shopListAdapter.onShopItemClickListenerLambda = {
-                requireActivity().supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.mainFragmentContainer, DetailFragment.newInstanceEditMode(it.id))
-                    .addToBackStack(null)
-                    .commit()
-            }
         }
     }
+
+    private fun setUpRecyclerElementsListeners() {
+        setUpClickListener()
+        setUpLongClickListener()
+    }
+
+    private fun setUpClickListener() {
+        shopListAdapter.onShopItemClickListenerLambda = {
+            launchDetailFragmentInEditMode(it.id)
+        }
+    }
+
+    private fun setUpLongClickListener() {
+        shopListAdapter.onShopItemLongClickListenerLambda = {
+            viewModel.changeIsEnableState(it)
+        }
+    }
+
+    private fun launchDetailFragmentInEditMode(shopItemId: Int) {
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.mainFragmentContainer, DetailFragment.newInstanceEditMode(shopItemId))
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun launchDetailFragmentInAddMode() {
+        requireActivity().supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.mainFragmentContainer, DetailFragment.newInstanceAddMode())
+            .addToBackStack(null)
+            .commit()
+    }
+
+
 }
+
+
+
 

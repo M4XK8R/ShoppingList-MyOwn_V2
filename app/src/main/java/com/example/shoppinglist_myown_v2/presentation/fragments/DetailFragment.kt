@@ -27,10 +27,6 @@ class DetailFragment : Fragment() {
             shopItemId = it.getInt(KEY_ARG_SHOP_ITEM_ID)
         }
         viewModel = ViewModelProvider(this)[DetailViewModel::class.java]
-
-        if (isShopItemCanBeInitialized) {
-            viewModel.setValueToShopItemLdById(shopItemId)
-        }
     }
 
     override fun onCreateView(
@@ -41,13 +37,22 @@ class DetailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
+        if (isShopItemCanBeInitialized) {
+            setUpTextFields()
+        }
         binding.saveButton.setOnClickListener {
             if (isShopItemCanBeInitialized) editShopItem() else addShopItem()
         }
         viewModel.anotherThreadsWorksIsDoneLd.observe(viewLifecycleOwner) {
             closeCurrentFragment()
         }
+    }
+
+    // PRIVATE FUNCTIONS
+    private fun setUpTextFields() {
+        val shopItem = viewModel.getActualShopItemLd(shopItemId).value
+        binding.etName.setText(shopItem?.name)
+        binding.etCount.setText(shopItem?.count.toString())
     }
 
     private fun closeCurrentFragment() {
@@ -67,7 +72,6 @@ class DetailFragment : Fragment() {
             binding.etCount.text.toString()
         )
     }
-
 
     companion object {
         @JvmStatic
