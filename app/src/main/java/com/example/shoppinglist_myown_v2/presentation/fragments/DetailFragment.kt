@@ -3,18 +3,18 @@ package com.example.shoppinglist_myown_v2.presentation.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.shoppinglist_myown_v2.R
 import com.example.shoppinglist_myown_v2.databinding.FragmentDetailBinding
 import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
 import com.example.shoppinglist_myown_v2.presentation.viewmodels.DetailViewModel
 
 private const val KEY_ARG_SHOP_ITEM_ID = "shop_item_id"
-private const val INVALID_VALUE = -1
 
 class DetailFragment : Fragment() {
     private lateinit var binding: FragmentDetailBinding
@@ -42,34 +42,51 @@ class DetailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setUpEtNameTextChangedListener()
+        setUpEtCountTextChangedListener()
+
         if (isShopItemCanBeInitialized) {
             setUpTextFields()
         }
         binding.saveButton.setOnClickListener {
             if (isShopItemCanBeInitialized) editShopItem() else addShopItem()
-
         }
+
+        // LD Observe
         viewModel.anotherThreadsWorksIsDoneLd.observe(viewLifecycleOwner) {
             closeCurrentFragment()
         }
 
         viewModel.isInputNameInvalidLd.observe(viewLifecycleOwner) {
-            if (it == true) {
-                binding.tilName.error = "NAME MUST BE AT LEAST ONE SYMBOL"
-                Log.d("DetailFragment", "isInputNameInvalidLd value = $it")
+            if (it) {
+                val errorMessage = context?.getString(R.string.error_input_name)
+                setNameInputError(errorMessage)
             } else {
-                binding.tilName.error = null
-            }
-        }
-        viewModel.isInputCountInvalidLd.observe(viewLifecycleOwner) {
-            if (it == true) {
-                binding.tilCount.error =
-                    "COUNT MUST BE AT LEAST ONE SYMBOL AND BE A POSITIVE NUMBER"
-            } else {
-                binding.tilCount.error = null
+                setNameInputError(null)
             }
         }
 
+        viewModel.isInputCountInvalidLd.observe(viewLifecycleOwner) {
+            if (it) {
+                val errorMessage = context?.getString(R.string.error_input_count)
+                setCountInputError(errorMessage)
+            } else {
+                setCountInputError(null)
+            }
+        }
+    }
+
+
+    // PRIVATE FUNCTIONS
+    private fun setNameInputError(errorMessage: String?) {
+        binding.tilName.error = errorMessage
+    }
+
+    private fun setCountInputError(errorMessage: String?) {
+        binding.tilCount.error = errorMessage
+    }
+
+    private fun setUpEtCountTextChangedListener() {
         binding.etCount.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun afterTextChanged(p0: Editable?) {}
@@ -78,6 +95,9 @@ class DetailFragment : Fragment() {
                 viewModel.resetError()
             }
         })
+    }
+
+    private fun setUpEtNameTextChangedListener() {
         binding.etName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun afterTextChanged(p0: Editable?) {}
@@ -88,7 +108,6 @@ class DetailFragment : Fragment() {
         })
     }
 
-    // PRIVATE FUNCTIONS
     private fun setUpTextFields() {
         val shopItem = viewModel.getActualShopItemLd(shopItemId).value
         binding.etName.setText(shopItem?.name)
