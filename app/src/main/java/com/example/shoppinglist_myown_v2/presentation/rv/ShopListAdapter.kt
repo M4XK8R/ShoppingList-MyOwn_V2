@@ -15,7 +15,6 @@ import kotlin.concurrent.thread
 class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
     private var countOfOnCreateViewHolder = 0
 
-
     var onShopItemLongClickListenerLambda: ((ShopItem) -> Unit)? = null
     var onShopItemClickListenerLambda: ((ShopItem) -> Unit)? = null
 

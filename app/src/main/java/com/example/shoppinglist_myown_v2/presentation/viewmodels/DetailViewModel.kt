@@ -30,6 +30,11 @@ class DetailViewModel : ViewModel() {
 
 
     // FUNCTIONS FOR USING FROM DETAIL FRAGMENT
+    fun resetError() {
+        _isInputNameInvalidLd.value = false
+        _isInputCountInvalidLd.value = false
+    }
+
     fun getActualShopItemLd(shopItemId: Int): LiveData<ShopItem> {
         setValueToShopItemLdById(shopItemId)
         return _shopItemLd
@@ -42,8 +47,8 @@ class DetailViewModel : ViewModel() {
         if (isFieldsValid) {
             val shopItem = ShopItem(name = name, count = count, true)
             addShopItemUseCase.addShopItem(shopItem)
+            _anotherThreadsWorksIsDoneLd.value = Unit
         }
-        _anotherThreadsWorksIsDoneLd.value = Unit
     }
 
     fun editShopItem(inputName: String?, inputCount: String?) {
@@ -55,8 +60,8 @@ class DetailViewModel : ViewModel() {
                 val newShopItem = it.copy(name = name, count = count)
                 editShopItemUseCase.editShopItem(newShopItem)
             }
+            _anotherThreadsWorksIsDoneLd.value = Unit
         }
-        _anotherThreadsWorksIsDoneLd.value = Unit
     }
 
     // PRIVATE FUNCTIONS

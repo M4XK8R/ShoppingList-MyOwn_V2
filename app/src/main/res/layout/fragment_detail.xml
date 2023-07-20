@@ -34,6 +34,7 @@
         android:layout_marginStart="@dimen/margin_parent_default"
         android:layout_marginEnd="@dimen/margin_parent_default"
         android:layout_marginBottom="@dimen/margin_between_elements_normal"
+        app:errorEnabled="true"
         app:layout_constraintBottom_toTopOf="@+id/saveButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
