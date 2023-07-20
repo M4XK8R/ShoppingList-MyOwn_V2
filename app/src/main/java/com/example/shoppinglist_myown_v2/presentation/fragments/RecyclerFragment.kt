@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist_myown_v2.R
 import com.example.shoppinglist_myown_v2.databinding.FragmentRecyclerBinding
 import com.example.shoppinglist_myown_v2.presentation.viewmodels.RecyclerViewModel
@@ -16,7 +18,9 @@ class RecyclerFragment : Fragment() {
     private lateinit var binding: FragmentRecyclerBinding
     private lateinit var shopListAdapter: ShopListAdapter
 
-    private lateinit var viewModel: RecyclerViewModel
+    private val viewModel by lazy {
+        ViewModelProvider(this)[RecyclerViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,22 +32,19 @@ class RecyclerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setUpRecyclerView()
-        setUpRecyclerElementsListeners()
 
-        viewModel = ViewModelProvider(this)[RecyclerViewModel::class.java]
+        setUpRecyclerView()
+        setUpRecyclerElementListeners()
+
         viewModel.shopList.observe(viewLifecycleOwner) {
             shopListAdapter.listShopItem = it
             Log.d("Recycler", " viewModel.shopListLd UP")
         }
 
-        binding.buttonAdd.setOnClickListener {
-            launchDetailFragmentInAddMode()
-        }
+        binding.buttonAdd.setOnClickListener { launchDetailFragmentInAddMode() }
     }
 
     // PRIVATE FUNCTIONS
-
     private fun setUpRecyclerView() {
         shopListAdapter = ShopListAdapter()
         binding.rvShopList.apply {
@@ -61,10 +62,34 @@ class RecyclerFragment : Fragment() {
         }
     }
 
-    private fun setUpRecyclerElementsListeners() {
+    private fun setUpRecyclerElementListeners() {
         setUpClickListener()
         setUpLongClickListener()
+        setUpOnSwipeListener()
     }
+
+    private fun setUpOnSwipeListener() {
+        val itemTouchCallback = object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val shopItem = shopListAdapter.listShopItem[viewHolder.adapterPosition]
+                viewModel.deleteShopItem(shopItem)
+            }
+        }
+        val itemTouchHelper = ItemTouchHelper(itemTouchCallback)
+        itemTouchHelper.attachToRecyclerView(binding.rvShopList)
+    }
+
 
     private fun setUpClickListener() {
         shopListAdapter.onShopItemClickListenerLambda = {

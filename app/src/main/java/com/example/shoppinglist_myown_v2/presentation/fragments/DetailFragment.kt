@@ -9,13 +9,16 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist_myown_v2.databinding.FragmentDetailBinding
 import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
 import com.example.shoppinglist_myown_v2.presentation.viewmodels.DetailViewModel
+import com.example.shoppinglist_myown_v2.presentation.viewmodels.RecyclerViewModel
 
 private const val KEY_ARG_SHOP_ITEM_ID = "shop_item_id"
 
 class DetailFragment : Fragment() {
-
     private lateinit var binding: FragmentDetailBinding
-    private lateinit var viewModel: DetailViewModel
+
+    private val viewModel by lazy {
+        ViewModelProvider(this)[DetailViewModel::class.java]
+    }
 
     // TODO: Rename and change types of parameters
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
@@ -26,7 +29,6 @@ class DetailFragment : Fragment() {
         arguments?.let {
             shopItemId = it.getInt(KEY_ARG_SHOP_ITEM_ID)
         }
-        viewModel = ViewModelProvider(this)[DetailViewModel::class.java]
     }
 
     override fun onCreateView(

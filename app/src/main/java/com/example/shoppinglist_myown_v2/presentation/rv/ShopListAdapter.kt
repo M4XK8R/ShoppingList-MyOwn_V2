@@ -3,10 +3,14 @@ package com.example.shoppinglist_myown_v2.presentation.rv
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.DiffUtil.DiffResult
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist_myown_v2.databinding.ViewHolderItemShopDisabledBinding
 import com.example.shoppinglist_myown_v2.databinding.ViewHolderItemShopEnabledBinding
 import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
+import kotlinx.coroutines.coroutineScope
+import kotlin.concurrent.thread
 
 class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
     private var countOfOnCreateViewHolder = 0
@@ -17,8 +21,10 @@ class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
 
     var listShopItem = listOf<ShopItem>()
         set(value) {
+            val diffCallback = ShopListDiffCallback(field, value)
+            val result = DiffUtil.calculateDiff(diffCallback)
+            result.dispatchUpdatesTo(this)
             field = value
-            notifyDataSetChanged()
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
@@ -40,9 +46,9 @@ class ShopListAdapter : RecyclerView.Adapter<ShopItemViewHolder>() {
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val shopItem = listShopItem[position]
         holder.binding.apply {
-           root.setOnClickListener {
-               onShopItemClickListenerLambda?.invoke(shopItem)
-           }
+            root.setOnClickListener {
+                onShopItemClickListenerLambda?.invoke(shopItem)
+            }
             root.setOnLongClickListener {
                 onShopItemLongClickListenerLambda?.invoke(shopItem)
                 true
