@@ -3,10 +3,10 @@ package com.example.shoppinglist_myown_v2.presentation.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoppinglist_myown_v2.R
@@ -14,7 +14,7 @@ import com.example.shoppinglist_myown_v2.databinding.FragmentDetailBinding
 import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
 import com.example.shoppinglist_myown_v2.presentation.viewmodels.DetailViewModel
 
-private const val KEY_ARG_SHOP_ITEM_ID = "shop_item_id"
+private const val KEY_ARG_SHOP_ITEM = "shop_item"
 
 class DetailFragment : Fragment() {
     private lateinit var binding: FragmentDetailBinding
@@ -23,14 +23,15 @@ class DetailFragment : Fragment() {
         ViewModelProvider(this)[DetailViewModel::class.java]
     }
 
-    // TODO: Rename and change types of parameters
-    private var shopItemId: Int = ShopItem.UNDEFINED_ID
-    private val isShopItemCanBeInitialized get() = shopItemId != ShopItem.UNDEFINED_ID
+    private var shopItem: ShopItem? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            shopItemId = it.getInt(KEY_ARG_SHOP_ITEM_ID)
+        arguments?.let { bundle ->
+            bundle.getParcelable<ShopItem>(KEY_ARG_SHOP_ITEM)?.let { shopItemFromArgs ->
+                shopItem = shopItemFromArgs
+            }
         }
     }
 
@@ -42,15 +43,11 @@ class DetailFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setUpTextFields()
         setUpEtNameTextChangedListener()
         setUpEtCountTextChangedListener()
 
-        if (isShopItemCanBeInitialized) {
-            setUpTextFields()
-        }
-        binding.saveButton.setOnClickListener {
-            if (isShopItemCanBeInitialized) editShopItem() else addShopItem()
-        }
+        binding.saveButton.setOnClickListener { addOrEditShopItem() }
 
         // LD Observe
         viewModel.anotherThreadsWorksIsDoneLd.observe(viewLifecycleOwner) {
@@ -109,26 +106,19 @@ class DetailFragment : Fragment() {
     }
 
     private fun setUpTextFields() {
-        val shopItem = viewModel.getActualShopItemLd(shopItemId).value
         binding.etName.setText(shopItem?.name)
-        binding.etCount.setText(shopItem?.count.toString())
+        binding.etCount.setText(shopItem?.count?.toString())
     }
 
     private fun closeCurrentFragment() {
         requireActivity().supportFragmentManager.popBackStack()
     }
 
-    private fun addShopItem() {
-        viewModel.addShopItem(
+    private fun addOrEditShopItem() {
+        viewModel.addOrEditShopItem(
             binding.etName.text.toString(),
-            binding.etCount.text.toString()
-        )
-    }
-
-    private fun editShopItem() {
-        viewModel.editShopItem(
-            binding.etName.text.toString(),
-            binding.etCount.text.toString()
+            binding.etCount.text.toString(),
+            shopItem
         )
     }
 
@@ -137,9 +127,9 @@ class DetailFragment : Fragment() {
         fun newInstanceAddMode() = DetailFragment()
 
         @JvmStatic
-        fun newInstanceEditMode(shopItemId: Int) = DetailFragment().apply {
+        fun newInstanceEditMode(shopItem: ShopItem) = DetailFragment().apply {
             arguments = Bundle().apply {
-                putInt(KEY_ARG_SHOP_ITEM_ID, shopItemId)
+                putParcelable(KEY_ARG_SHOP_ITEM, shopItem)
             }
         }
     }
