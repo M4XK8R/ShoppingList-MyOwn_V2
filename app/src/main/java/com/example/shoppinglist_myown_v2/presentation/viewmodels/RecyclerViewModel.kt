@@ -1,7 +1,7 @@
 package com.example.shoppinglist_myown_v2.presentation.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.example.shoppinglist_myown_v2.data.ShopListRepositoryImpl
+import com.example.shoppinglist_myown_v2.data.repository.ShopListRepositoryImpl
 import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
 import com.example.shoppinglist_myown_v2.domain.usecases.DeleteShopItemUseCase
 import com.example.shoppinglist_myown_v2.domain.usecases.EditShopItemUseCase

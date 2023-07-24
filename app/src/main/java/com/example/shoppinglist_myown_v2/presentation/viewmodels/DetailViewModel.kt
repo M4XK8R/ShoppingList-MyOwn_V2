@@ -3,7 +3,7 @@ package com.example.shoppinglist_myown_v2.presentation.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.shoppinglist_myown_v2.data.ShopListRepositoryImpl
+import com.example.shoppinglist_myown_v2.data.repository.ShopListRepositoryImpl
 import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
 import com.example.shoppinglist_myown_v2.domain.usecases.AddShopItemUseCase
 import com.example.shoppinglist_myown_v2.domain.usecases.EditShopItemUseCase
