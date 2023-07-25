@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist_myown_v2.R
 import com.example.shoppinglist_myown_v2.databinding.FragmentRecyclerBinding
+import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
 import com.example.shoppinglist_myown_v2.presentation.viewmodels.RecyclerViewModel
 import com.example.shoppinglist_myown_v2.presentation.rv.ShopListAdapter
 
@@ -36,9 +37,8 @@ class RecyclerFragment : Fragment() {
         setUpRecyclerView()
         setUpRecyclerElementListeners()
 
-        viewModel.shopList.observe(viewLifecycleOwner) {
+        viewModel.shopListLd.observe(viewLifecycleOwner) {
             shopListAdapter.listShopItem = it
-            Log.d("Recycler", " viewModel.shopListLd UP")
         }
 
         binding.buttonAdd.setOnClickListener { launchDetailFragmentInAddMode() }
@@ -93,7 +93,7 @@ class RecyclerFragment : Fragment() {
 
     private fun setUpClickListener() {
         shopListAdapter.onShopItemClickListenerLambda = {
-            launchDetailFragmentInEditMode(it.id)
+            launchDetailFragmentInEditMode(it)
         }
     }
 
@@ -103,10 +103,10 @@ class RecyclerFragment : Fragment() {
         }
     }
 
-    private fun launchDetailFragmentInEditMode(shopItemId: Int) {
+    private fun launchDetailFragmentInEditMode(shopItem: ShopItem) {
         requireActivity().supportFragmentManager
             .beginTransaction()
-            .replace(R.id.mainFragmentContainer, DetailFragment.newInstanceEditMode(shopItemId))
+            .replace(R.id.mainFragmentContainer, DetailFragment.newInstanceEditMode(shopItem))
             .addToBackStack(null)
             .commit()
     }

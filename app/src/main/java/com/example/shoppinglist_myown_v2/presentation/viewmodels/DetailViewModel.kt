@@ -1,24 +1,24 @@
 package com.example.shoppinglist_myown_v2.presentation.viewmodels
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.example.shoppinglist_myown_v2.data.ShopListRepositoryImpl
+import androidx.lifecycle.viewModelScope
+import com.example.shoppinglist_myown_v2.data.repository.ShopListDbRepositoryImpl
 import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
 import com.example.shoppinglist_myown_v2.domain.usecases.AddShopItemUseCase
 import com.example.shoppinglist_myown_v2.domain.usecases.EditShopItemUseCase
 import com.example.shoppinglist_myown_v2.domain.usecases.GetShopItemByIdUseCase
+import com.example.shoppinglist_myown_v2.domain.usecases.RoomDbAddOrEditShopItemUseCase
+import kotlinx.coroutines.launch
 
-class DetailViewModel : ViewModel() {
-    private val repository = ShopListRepositoryImpl
+class DetailViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val getShopItemByIdUseCase = GetShopItemByIdUseCase(repository)
-    private val addShopItemUseCase = AddShopItemUseCase(repository)
-    private val editShopItemUseCase = EditShopItemUseCase(repository)
+    private val repository = ShopListDbRepositoryImpl(application)
+    private val addOrEditShopItemUseCase = RoomDbAddOrEditShopItemUseCase(repository)
 
     // LD
-    private val _shopItemLd = MutableLiveData<ShopItem>()
-
     private val _isInputNameInvalidLd = MutableLiveData<Boolean>()
     val isInputNameInvalidLd: LiveData<Boolean> get() = _isInputNameInvalidLd
 
@@ -30,49 +30,31 @@ class DetailViewModel : ViewModel() {
 
 
     // FUNCTIONS FOR USING FROM DETAIL FRAGMENT
+
+    fun addOrEditShopItem(
+        inputName: String?,
+        inputCount: String?,
+        currentShopItem: ShopItem?
+    ) {
+        viewModelScope.launch {
+            val name = parseName(inputName)
+            val count = parseCount(inputCount)
+            val isFieldsValid = isInputValid(name, count)
+            if (isFieldsValid) {
+                val shopItem = currentShopItem?.copy(name = name, count = count)
+                    ?: ShopItem(name, count)
+                addOrEditShopItemUseCase.addOrEditShopItem(shopItem)
+                _anotherThreadsWorksIsDoneLd.value = Unit
+            }
+        }
+    }
+
     fun resetError() {
         _isInputNameInvalidLd.value = false
         _isInputCountInvalidLd.value = false
     }
 
-    fun getActualShopItemLd(shopItemId: Int): LiveData<ShopItem> {
-        setValueToShopItemLdById(shopItemId)
-        return _shopItemLd
-    }
-
-    fun addShopItem(inputName: String?, inputCount: String?) {
-        val name = parseName(inputName)
-        val count = parseCount(inputCount)
-        val isFieldsValid = isInputValid(name, count)
-        if (isFieldsValid) {
-            val shopItem = ShopItem(name = name, count = count, true)
-            addShopItemUseCase.addShopItem(shopItem)
-            _anotherThreadsWorksIsDoneLd.value = Unit
-        }
-    }
-
-    fun editShopItem(inputName: String?, inputCount: String?) {
-        val name = parseName(inputName)
-        val count = parseCount(inputCount)
-        val isFieldsValid = isInputValid(name, count)
-        if (isFieldsValid) {
-            _shopItemLd.value?.let {
-                val newShopItem = it.copy(name = name, count = count)
-                editShopItemUseCase.editShopItem(newShopItem)
-            }
-            _anotherThreadsWorksIsDoneLd.value = Unit
-        }
-    }
-
     // PRIVATE FUNCTIONS
-    private fun setValueToShopItemLdById(shopItemId: Int) {
-        val shopItem = getShopItemById(shopItemId)
-        _shopItemLd.value = shopItem
-    }
-
-    private fun getShopItemById(shopItemId: Int): ShopItem {
-        return getShopItemByIdUseCase.getShopItemById(shopItemId)
-    }
 
     private fun parseName(inputName: String?): String = inputName?.trim() ?: ""
 
