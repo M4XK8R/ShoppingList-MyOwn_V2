@@ -1,4 +1,4 @@
-package com.example.shoppinglist_myown_v2.presentation.viewmodels
+package com.example.shoppinglist_myown_v2.presentation.screens.recycler
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

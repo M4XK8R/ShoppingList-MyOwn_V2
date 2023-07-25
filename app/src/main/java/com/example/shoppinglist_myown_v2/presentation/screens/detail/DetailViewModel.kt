@@ -1,16 +1,15 @@
-package com.example.shoppinglist_myown_v2.presentation.viewmodels
+package com.example.shoppinglist_myown_v2.presentation.screens.detail
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
 import com.example.shoppinglist_myown_v2.data.repository.ShopListDbRepositoryImpl
 import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
-import com.example.shoppinglist_myown_v2.domain.usecases.AddShopItemUseCase
-import com.example.shoppinglist_myown_v2.domain.usecases.EditShopItemUseCase
-import com.example.shoppinglist_myown_v2.domain.usecases.GetShopItemByIdUseCase
 import com.example.shoppinglist_myown_v2.domain.usecases.RoomDbAddOrEditShopItemUseCase
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class DetailViewModel(application: Application) : AndroidViewModel(application) {
@@ -31,21 +30,24 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
 
     // FUNCTIONS FOR USING FROM DETAIL FRAGMENT
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun addOrEditShopItem(
         inputName: String?,
         inputCount: String?,
         currentShopItem: ShopItem?
     ) {
-        viewModelScope.launch {
-            val name = parseName(inputName)
-            val count = parseCount(inputCount)
-            val isFieldsValid = isInputValid(name, count)
-            if (isFieldsValid) {
-                val shopItem = currentShopItem?.copy(name = name, count = count)
-                    ?: ShopItem(name, count)
+        val name = parseName(inputName)
+        val count = parseCount(inputCount)
+        val isFieldsValid = isInputValid(name, count)
+        if (isFieldsValid) {
+            val shopItem = currentShopItem?.copy(name = name, count = count)
+                ?: ShopItem(name, count)
+            GlobalScope.launch {
+//            viewModelScope.launch {
+                delay(500)
                 addOrEditShopItemUseCase.addOrEditShopItem(shopItem)
-                _anotherThreadsWorksIsDoneLd.value = Unit
             }
+            _anotherThreadsWorksIsDoneLd.value = Unit
         }
     }
 
@@ -54,7 +56,7 @@ class DetailViewModel(application: Application) : AndroidViewModel(application) 
         _isInputCountInvalidLd.value = false
     }
 
-    // PRIVATE FUNCTIONS
+// PRIVATE FUNCTIONS
 
     private fun parseName(inputName: String?): String = inputName?.trim() ?: ""
 
