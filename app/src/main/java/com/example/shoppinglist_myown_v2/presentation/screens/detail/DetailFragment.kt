@@ -1,4 +1,4 @@
-package com.example.shoppinglist_myown_v2.presentation.fragments
+package com.example.shoppinglist_myown_v2.presentation.screens.detail
 
 import android.os.Bundle
 import android.text.Editable
@@ -9,15 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.example.shoppinglist_myown_v2.R
 import com.example.shoppinglist_myown_v2.databinding.FragmentDetailBinding
 import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
-import com.example.shoppinglist_myown_v2.presentation.viewmodels.DetailViewModel
-
-private const val KEY_ARG_SHOP_ITEM = "shop_item"
 
 class DetailFragment : Fragment() {
     private lateinit var binding: FragmentDetailBinding
+
+    private val args: DetailFragmentArgs by navArgs()
 
     private val viewModel by lazy {
         ViewModelProvider(this)[DetailViewModel::class.java]
@@ -25,14 +26,9 @@ class DetailFragment : Fragment() {
 
     private var shopItem: ShopItem? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let { bundle ->
-            bundle.getParcelable<ShopItem>(KEY_ARG_SHOP_ITEM)?.let { shopItemFromArgs ->
-                shopItem = shopItemFromArgs
-            }
-        }
+        shopItem = args.shopItem
     }
 
     override fun onCreateView(
@@ -73,7 +69,6 @@ class DetailFragment : Fragment() {
         }
     }
 
-
     // PRIVATE FUNCTIONS
     private fun setNameInputError(errorMessage: String?) {
         binding.tilName.error = errorMessage
@@ -111,7 +106,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun closeCurrentFragment() {
-        requireActivity().supportFragmentManager.popBackStack()
+        findNavController().popBackStack()
     }
 
     private fun addOrEditShopItem() {
@@ -120,17 +115,5 @@ class DetailFragment : Fragment() {
             binding.etCount.text.toString(),
             shopItem
         )
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstanceAddMode() = DetailFragment()
-
-        @JvmStatic
-        fun newInstanceEditMode(shopItem: ShopItem) = DetailFragment().apply {
-            arguments = Bundle().apply {
-                putParcelable(KEY_ARG_SHOP_ITEM, shopItem)
-            }
-        }
     }
 }

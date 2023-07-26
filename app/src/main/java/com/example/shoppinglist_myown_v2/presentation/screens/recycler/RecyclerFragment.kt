@@ -1,4 +1,4 @@
-package com.example.shoppinglist_myown_v2.presentation.fragments
+package com.example.shoppinglist_myown_v2.presentation.screens.recycler
 
 import android.os.Bundle
 import android.util.Log
@@ -7,12 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist_myown_v2.R
 import com.example.shoppinglist_myown_v2.databinding.FragmentRecyclerBinding
 import com.example.shoppinglist_myown_v2.domain.entity.ShopItem
-import com.example.shoppinglist_myown_v2.presentation.viewmodels.RecyclerViewModel
+import com.example.shoppinglist_myown_v2.presentation.screens.detail.DetailFragment
 import com.example.shoppinglist_myown_v2.presentation.rv.ShopListAdapter
 
 class RecyclerFragment : Fragment() {
@@ -104,22 +105,17 @@ class RecyclerFragment : Fragment() {
     }
 
     private fun launchDetailFragmentInEditMode(shopItem: ShopItem) {
-        requireActivity().supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.mainFragmentContainer, DetailFragment.newInstanceEditMode(shopItem))
-            .addToBackStack(null)
-            .commit()
+//        val args = Bundle().apply {
+//            putParcelable(DetailFragment.KEY_ARG_SHOP_ITEM, shopItem)
+//        }
+        findNavController().navigate(
+            RecyclerFragmentDirections.actionRecyclerFragmentToDetailFragment(shopItem)
+        )
     }
 
     private fun launchDetailFragmentInAddMode() {
-        requireActivity().supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.mainFragmentContainer, DetailFragment.newInstanceAddMode())
-            .addToBackStack(null)
-            .commit()
+        findNavController().navigate(RecyclerFragmentDirections.actionRecyclerFragmentToDetailFragment())
     }
-
-
 }
 
 
